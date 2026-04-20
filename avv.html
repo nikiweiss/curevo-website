@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AVV — Curevo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          petrol:'#0E1A1F',petrol2:'#1A2A30',petrol3:'#223740',
+          bone:'#F2EFE9',bone2:'#E5E0D6',
+          teal:'#3A9B8A',teallt:'#5DBAA9',sand:'#C9A87C',mute:'#8A9499',
+        },
+        fontFamily: {
+          display:['Fraunces','ui-serif','Georgia','serif'],
+          ui:['Geist','ui-sans-serif','system-ui'],
+          mono:['"Geist Mono"','ui-monospace','monospace'],
+        },
+      }
+    }
+  };
+</script>
+<style>
+  html,body{background:#0E1A1F;}
+  *{font-family:'Geist',ui-sans-serif,system-ui,sans-serif;}
+  ::selection{background:#3A9B8A;color:#0E1A1F;}
+  .prose h2{font-family:'Fraunces',serif;font-weight:300;color:#F2EFE9;font-size:1.3rem;margin-top:2.5rem;margin-bottom:0.75rem;padding-top:1.5rem;border-top:1px solid rgba(242,239,233,0.08);}
+  .prose h3{font-family:'Geist Mono',monospace;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:#3A9B8A;margin-top:1.75rem;margin-bottom:0.5rem;}
+  .prose p{color:rgba(242,239,233,0.65);font-size:0.875rem;line-height:1.8;margin-bottom:0.85rem;}
+  .prose a{color:#3A9B8A;text-decoration:underline;text-underline-offset:3px;}
+  .prose a:hover{color:#5DBAA9;}
+  .prose ul{color:rgba(242,239,233,0.65);font-size:0.875rem;line-height:1.8;margin-bottom:0.85rem;padding-left:1.25rem;list-style:disc;}
+  .prose ul li{margin-bottom:0.25rem;}
+  .prose strong{color:rgba(242,239,233,0.9);font-weight:500;}
+  .prose table{width:100%;border-collapse:collapse;margin-bottom:1.5rem;}
+  .prose th{font-family:'Geist Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#3A9B8A;padding:0.75rem 1rem;border-bottom:1px solid rgba(242,239,233,0.1);text-align:left;}
+  .prose td{color:rgba(242,239,233,0.65);font-size:0.85rem;padding:0.75rem 1rem;border-bottom:1px solid rgba(242,239,233,0.05);vertical-align:top;}
+  .info-box{background:rgba(58,155,138,0.08);border:1px solid rgba(58,155,138,0.2);border-radius:0.75rem;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:0.8rem;color:rgba(242,239,233,0.55);line-height:1.7;}
+  .parties-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;}
+  .party-box{background:rgba(242,239,233,0.04);border:1px solid rgba(242,239,233,0.08);border-radius:0.75rem;padding:1.25rem;}
+  .party-label{font-family:'Geist Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:#3A9B8A;margin-bottom:0.5rem;}
+  .party-name{color:#F2EFE9;font-size:0.9rem;font-weight:500;margin-bottom:0.25rem;}
+  .party-detail{color:rgba(242,239,233,0.5);font-size:0.8rem;line-height:1.6;}
+  .sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2.5rem;}
+  .sig-box{background:rgba(242,239,233,0.03);border:1px solid rgba(242,239,233,0.08);border-radius:0.75rem;padding:1.5rem;}
+  .sig-line{border-bottom:1px solid rgba(242,239,233,0.2);margin-bottom:0.5rem;height:2.5rem;}
+  .sig-label{font-family:'Geist Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(242,239,233,0.3);}
+  .check-item{display:flex;align-items:flex-start;gap:0.75rem;margin-bottom:0.5rem;}
+  .check-box{width:14px;height:14px;border:1px solid rgba(58,155,138,0.4);border-radius:3px;flex-shrink:0;margin-top:2px;background:rgba(58,155,138,0.1);}
+  .check-text{color:rgba(242,239,233,0.65);font-size:0.85rem;line-height:1.6;}
+  @media(max-width:640px){.parties-grid,.sig-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body class="bg-petrol text-bone antialiased min-h-screen">
+
+<nav class="border-b border-bone/8 px-4 md:px-8 py-4 sticky top-0 bg-petrol/95 backdrop-blur-sm z-10">
+  <div class="max-w-4xl mx-auto flex items-center justify-between">
+    <a href="/" class="font-display text-xl text-bone font-medium tracking-tight">Curevo</a>
+    <a href="/" class="font-mono text-[11px] text-bone/50 tracking-[0.15em] uppercase hover:text-teal transition-colors">← Zurück</a>
+  </div>
+</nav>
+
+<main class="max-w-4xl mx-auto px-4 md:px-8 py-16 md:py-24">
+  <p class="font-mono text-[11px] text-teal tracking-[0.2em] uppercase mb-4">Rechtliches</p>
+  <h1 class="font-display font-light text-bone text-4xl md:text-5xl leading-[1.05] tracking-[-0.02em] mb-2">Auftragsverarbeitungsvertrag</h1>
+  <p class="font-mono text-[11px] text-bone/30 tracking-widest mb-12">gemäß Art. 28 DSGVO · Basierend auf WKO Mustervertrag · Stand: Juni 2024</p>
+
+  <div class="bg-petrol2 border border-bone/8 rounded-2xl p-8 md:p-12">
+
+    <div class="info-box">
+      ℹ️ Dieser AVV wird beim Onboarding individuell mit jedem Kunden unterzeichnet. Die nachfolgende Version dient als Vorlage — Kundendaten werden beim Onboarding eingetragen.
+    </div>
+
+    <!-- Parteien -->
+    <div class="parties-grid">
+      <div class="party-box">
+        <div class="party-label">Der Verantwortliche (Auftraggeber)</div>
+        <div class="party-name">[ Name des Maklers / Maklerbüros ]</div>
+        <div class="party-detail">
+          [ Straße, Hausnummer ]<br/>
+          [ PLZ ] [ Ort ], Österreich<br/>
+          [ E-Mail ]
+        </div>
+      </div>
+      <div class="party-box">
+        <div class="party-label">Der Auftragsverarbeiter (Auftragnehmer)</div>
+        <div class="party-name">Niklas Weiß (Curevo)</div>
+        <div class="party-detail">
+          Moosstraße 79A<br/>
+          5020 Salzburg, Österreich<br/>
+          info@curevo.at
+        </div>
+      </div>
+    </div>
+
+    <div class="prose">
+
+      <h2 style="border-top:none;padding-top:0;margin-top:0;">1. Gegenstand der Vereinbarung</h2>
+      <p>Gegenstand dieses Auftrages ist die Durchführung folgender Aufgaben: Automatisierte Verarbeitung von eingehenden Immobilien-Leads via E-Mail — einschließlich Parsing, KI-gestützter Analyse, automatischer Beantwortung, Qualifizierung und Erfassung im CRM-System des Auftraggebers. Diese Vereinbarung ist als Ergänzung zum individuell vereinbarten Dienstleistungsvertrag zu verstehen.</p>
+
+      <h3>Verarbeitete Datenkategorien</h3>
+      <table>
+        <tr><th>Datenkategorie</th><th>Beispiele</th></tr>
+        <tr><td>Kontaktdaten</td><td>Name, E-Mail-Adresse, Telefonnummer von Interessenten</td></tr>
+        <tr><td>Anfrageinhalte</td><td>Objektinteresse, Budget, Zeitraum, Nachrichten der Interessenten</td></tr>
+        <tr><td>Kommunikationsverlauf</td><td>Eingehende und ausgehende E-Mails im Rahmen der Lead-Bearbeitung</td></tr>
+        <tr><td>CRM-Daten</td><td>Lead-Status, Qualifizierungsergebnis, Terminbuchungen</td></tr>
+      </table>
+
+      <h3>Betroffene Personen</h3>
+      <p>Immobilieninteressenten (potenzielle Käufer, Mieter) die über ImmoScout24, Willhaben, die eigene Website oder andere Kanäle des Auftraggebers Anfragen stellen.</p>
+
+      <h2>2. Dauer der Vereinbarung</h2>
+      <p>Die Vereinbarung ist auf unbestimmte Zeit geschlossen und kann von beiden Parteien mit einer Frist von 30 Tagen zum Monatsende gekündigt werden. Die Möglichkeit zur außerordentlichen Kündigung aus wichtigem Grund bleibt unberührt. Die Vereinbarung endet automatisch mit dem Ende des Hauptvertrages.</p>
+
+      <h2>3. Pflichten des Auftragnehmers (Curevo)</h2>
+      <p>Der Auftragnehmer verpflichtet sich:</p>
+      <ul>
+        <li>Daten ausschließlich im Rahmen der schriftlichen Aufträge des Auftraggebers zu verarbeiten.</li>
+        <li>Alle mit der Datenverarbeitung beauftragten Personen zur Vertraulichkeit zu verpflichten — auch nach Beendigung ihrer Tätigkeit.</li>
+        <li>Alle erforderlichen technischen und organisatorischen Maßnahmen zur Gewährleistung der Datensicherheit gemäß Art. 32 DSGVO zu ergreifen (siehe Anlage).</li>
+        <li>Den Auftraggeber bei der Erfüllung der Betroffenenrechte (Auskunft, Berichtigung, Löschung, Datenübertragbarkeit) zu unterstützen.</li>
+        <li>Den Auftraggeber unverzüglich zu informieren falls eine Weisung gegen Datenschutzbestimmungen verstößt.</li>
+        <li>Nach Beendigung der Vereinbarung alle Daten zu löschen oder dem Auftraggeber als CSV-Export zu übergeben — innerhalb von 30 Tagen.</li>
+        <li>Ein Verarbeitungsverzeichnis nach Art. 30 DSGVO zu führen.</li>
+      </ul>
+
+      <h2>4. Ort der Datenverarbeitung</h2>
+      <p>Die primäre Datenverarbeitung erfolgt auf Hetzner-Servern in Deutschland (EU). Für die KI-gestützte Variablen-Extraktion wird OpenAI (USA) eingesetzt — OpenAI ist aktiver Teilnehmer des EU-US Data Privacy Frameworks. Das CRM (Airtable) wird auf US-Servern betrieben — Airtable ist ebenfalls Teilnehmer des EU-US Data Privacy Frameworks.</p>
+
+      <h2>5. Sub-Auftragsverarbeiter</h2>
+      <p>Der Auftragnehmer ist befugt, folgende Sub-Auftragsverarbeiter heranzuziehen:</p>
+      <table>
+        <tr><th>Anbieter</th><th>Sitz</th><th>Tätigkeit</th></tr>
+        <tr><td><strong>Hetzner Online GmbH</strong></td><td>Deutschland (EU)</td><td>Server-Hosting, Workflow-Engine</td></tr>
+        <tr><td><strong>OpenAI, Inc.</strong></td><td>USA (EU-US DPF)</td><td>KI-gestützte Variablen-Extraktion</td></tr>
+        <tr><td><strong>Airtable, Inc.</strong></td><td>USA (EU-US DPF)</td><td>CRM / Lead-Management</td></tr>
+        <tr><td><strong>Formspree, Inc.</strong></td><td>USA</td><td>Kontaktformular-Verarbeitung (Website)</td></tr>
+      </table>
+      <p>Beabsichtigte Änderungen der Sub-Auftragsverarbeiter werden dem Auftraggeber rechtzeitig schriftlich bekannt gegeben. Der Auftragnehmer stellt sicher dass Sub-Auftragsverarbeiter dieselben Datenschutzverpflichtungen eingehen.</p>
+
+      <h2>6. Rechte des Auftraggebers</h2>
+      <p>Dem Auftraggeber wird das Recht jederzeitiger Einsichtnahme und Kontrolle der Datenverarbeitungseinrichtungen eingeräumt. Der Auftragnehmer stellt alle notwendigen Informationen zur Verfügung um die Einhaltung dieser Vereinbarung zu kontrollieren.</p>
+
+      <h2>7. Datenlöschung bei Vertragsende</h2>
+      <p>Nach Beendigung dieser Vereinbarung werden alle Kundendaten und Verarbeitungsergebnisse innerhalb von 30 Tagen unwiderruflich gelöscht. Der Auftraggeber erhält auf Wunsch vorab einen vollständigen CSV-Export aller Lead-Daten aus dem CRM.</p>
+
+      <h2>8. Anwendbares Recht</h2>
+      <p>Es gilt österreichisches Recht. Gerichtsstand ist Salzburg, Österreich.</p>
+
+      <!-- Anlage TOM -->
+      <h2>Anlage — Technisch-organisatorische Maßnahmen (TOM)</h2>
+      <p style="font-size:0.8rem;color:rgba(242,239,233,0.4);">gemäß Art. 32 DSGVO</p>
+
+      <h3>A. Vertraulichkeit</h3>
+      <div class="check-item"><div class="check-box" style="background:#3A9B8A;"></div><div class="check-text">Zugangskontrolle: Kennwörter und Zwei-Faktor-Authentifizierung für alle Systeme</div></div>
+      <div class="check-item"><div class="check-box" style="background:#3A9B8A;"></div><div class="check-text">Zugriffskontrolle: Berechtigungen auf „Need-to-know-Basis" — nur autorisiertes Personal hat Zugang</div></div>
+      <div class="check-item"><div class="check-box" style="background:#3A9B8A;"></div><div class="check-text">Verschlüsselung aller Datenübertragungen via TLS/HTTPS</div></div>
+      <div class="check-item"><div class="check-box" style="background:#3A9B8A;"></div><div class="check-text">Vertraulichkeitsverpflichtung aller beteiligten Personen</div></div>
+
+      <h3>B. Datenintegrität</h3>
+      <div class="check-item"><div class="check-box" style="background:#3A9B8A;"></div><div class="check-text">Weitergabekontrolle: Verschlüsselte Datenübertragung via HTTPS/TLS</div></div>
+      <div class="check-item"><div class="check-box" style="background:#3A9B8A;"></div><div class="check-text">Protokollierung aller Verarbeitungsschritte im Workflow</div></div>
+
+      <h3>C. Verfügbarkeit und Belastbarkeit</h3>
+      <div class="check-item"><div class="check-box" style="background:#3A9B8A;"></div><div class="check-text">24/7 Monitoring via Uptime Kuma — automatische Alerts bei Systemausfall</div></div>
+      <div class="check-item"><div class="check-box" style="background:#3A9B8A;"></div><div class="check-text">Sofortige Benachrichtigung des Auftraggebers bei Datenpannen via Telegram</div></div>
+      <div class="check-item"><div class="check-box" style="background:#3A9B8A;"></div><div class="check-text">Automatische Datenlöschung nach 90 Tagen im CRM</div></div>
+      <div class="check-item"><div class="check-box" style="background:#3A9B8A;"></div><div class="check-text">Hetzner EU-Server mit professionellem Rechenzentrum-Betrieb</div></div>
+
+      <h3>D. Regelmäßige Überprüfung</h3>
+      <div class="check-item"><div class="check-box" style="background:#3A9B8A;"></div><div class="check-text">Monatlicher Check-in mit dem Auftraggeber über Systemstatus</div></div>
+      <div class="check-item"><div class="check-box" style="background:#3A9B8A;"></div><div class="check-text">Täglicher Heartbeat-Report über verarbeitete Leads und Fehler</div></div>
+
+      <!-- Unterschriften -->
+      <h2>Unterzeichnung</h2>
+      <p>Diese Vereinbarung wird beim Onboarding von beiden Parteien unterzeichnet.</p>
+    </div>
+
+    <div class="sig-grid">
+      <div class="sig-box">
+        <div class="sig-label">Ort, Datum</div>
+        <div class="sig-line"></div>
+        <div class="sig-label">Für den Auftraggeber</div>
+        <div style="color:rgba(242,239,233,0.4);font-size:0.8rem;margin-top:0.5rem;">[ Name + Funktion ]</div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-label">Salzburg, Datum</div>
+        <div class="sig-line"></div>
+        <div class="sig-label">Für den Auftragnehmer</div>
+        <div style="color:rgba(242,239,233,0.4);font-size:0.8rem;margin-top:0.5rem;">Niklas Weiß · Curevo</div>
+      </div>
+    </div>
+
+    <p style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(242,239,233,0.08);font-size:0.75rem;color:rgba(242,239,233,0.25);">
+      Basierend auf dem WKO Mustervertrag für Auftragsverarbeitung nach Art. 28 DSGVO · Stand Juni 2024 · Curevo, Salzburg
+    </p>
+
+  </div>
+</main>
+
+<footer class="border-t border-bone/8 px-4 md:px-8 py-8 mt-12">
+  <div class="max-w-4xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4 font-mono text-[11px] text-bone/35">
+    <div class="flex items-center gap-3">
+      <span class="font-display text-base text-bone font-medium tracking-tight">Curevo</span>
+      <span>© 2026</span>
+      <span class="text-bone/20">·</span>
+      <span>Niklas Weiß</span>
+    </div>
+    <div class="flex gap-6">
+      <a href="/impressum.html" class="hover:text-teal transition-colors">Impressum</a>
+      <a href="/datenschutz.html" class="hover:text-teal transition-colors">Datenschutz</a>
+      <a href="/agb.html" class="hover:text-teal transition-colors">AGB</a>
+      <a href="/avv.html" class="hover:text-teal transition-colors">AVV</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
