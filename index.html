@@ -778,5 +778,42 @@
   cards.forEach(c => cIo.observe(c));
 </script>
 
+<!-- ╔═══════════════════════════════════════════════════════════════╗
+     COOKIE BANNER
+     ╚═══════════════════════════════════════════════════════════════╝ -->
+<div id="cookie-banner" style="display:none" class="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6">
+  <div class="max-w-4xl mx-auto bg-petrol2 border border-bone/12 rounded-2xl p-5 md:p-6 flex flex-col md:flex-row md:items-center gap-4 shadow-2xl">
+    <div class="flex-1">
+      <p class="font-mono text-[10px] text-teal tracking-[0.15em] uppercase mb-1">Cookie-Hinweis</p>
+      <p class="text-bone/65 text-sm leading-relaxed">
+        Wir verwenden ausschließlich technisch notwendige Cookies. Keine Tracking- oder Marketing-Cookies.
+        <a href="/datenschutz.html" class="text-teal hover:text-teallt underline underline-offset-2 ml-1">Datenschutz</a>
+      </p>
+    </div>
+    <div class="flex gap-3 flex-shrink-0">
+      <button onclick="acceptCookies()"
+              class="inline-flex items-center gap-2 bg-teal text-petrol rounded-full px-5 py-2 font-ui font-medium text-sm hover:bg-teallt transition-colors">
+        Verstanden
+      </button>
+      <a href="/cookies.html"
+         class="inline-flex items-center gap-2 border border-bone/20 text-bone/60 rounded-full px-5 py-2 font-ui font-medium text-sm hover:border-bone/40 hover:text-bone transition-colors">
+        Einstellungen
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  function acceptCookies() {
+    localStorage.setItem('curevo-cookies', 'accepted');
+    document.getElementById('cookie-banner').style.display = 'none';
+  }
+  if (!localStorage.getItem('curevo-cookies')) {
+    setTimeout(() => {
+      document.getElementById('cookie-banner').style.display = 'block';
+    }, 1500);
+  }
+</script>
+  
 </body>
 </html>
