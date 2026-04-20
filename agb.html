@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AGB — Curevo</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          petrol:  '#0E1A1F', petrol2: '#1A2A30', petrol3: '#223740',
+          bone:    '#F2EFE9', bone2:   '#E5E0D6',
+          teal:    '#3A9B8A', teallt:  '#5DBAA9', sand: '#C9A87C', mute: '#8A9499',
+        },
+        fontFamily: {
+          display: ['Fraunces', 'ui-serif', 'Georgia', 'serif'],
+          ui:      ['Geist', 'ui-sans-serif', 'system-ui'],
+          mono:    ['"Geist Mono"', 'ui-monospace', 'monospace'],
+        },
+      }
+    }
+  };
+</script>
+<style>
+  html, body { background: #0E1A1F; }
+  * { font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; }
+  ::selection { background: #3A9B8A; color: #0E1A1F; }
+  .prose h2 { font-family: 'Fraunces', serif; font-weight: 300; color: #F2EFE9; font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.75rem; }
+  .prose h3 { font-family: 'Geist Mono', monospace; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: #3A9B8A; margin-top: 1.75rem; margin-bottom: 0.5rem; }
+  .prose p  { color: rgba(242,239,233,0.65); font-size: 0.9rem; line-height: 1.75; margin-bottom: 0.75rem; }
+  .prose a  { color: #3A9B8A; text-decoration: underline; text-underline-offset: 3px; }
+  .prose a:hover { color: #5DBAA9; }
+  .prose ul { color: rgba(242,239,233,0.65); font-size: 0.9rem; line-height: 1.75; margin-bottom: 0.75rem; padding-left: 1.25rem; list-style: disc; }
+</style>
+</head>
+<body class="bg-petrol text-bone antialiased min-h-screen">
+
+<nav class="border-b border-bone/8 px-4 md:px-8 py-4">
+  <div class="max-w-4xl mx-auto flex items-center justify-between">
+    <a href="/" class="font-display text-xl text-bone font-medium tracking-tight">Curevo</a>
+    <a href="/" class="font-mono text-[11px] text-bone/50 tracking-[0.15em] uppercase hover:text-teal transition-colors">← Zurück</a>
+  </div>
+</nav>
+
+<main class="max-w-4xl mx-auto px-4 md:px-8 py-16 md:py-24">
+
+  <p class="font-mono text-[11px] text-teal tracking-[0.2em] uppercase mb-4">Rechtliches</p>
+  <h1 class="font-display font-light text-bone text-4xl md:text-5xl leading-[1.05] tracking-[-0.02em] mb-4">Allgemeine Geschäftsbedingungen</h1>
+  <p class="font-mono text-[11px] text-bone/35 tracking-widest mb-12">Stand: 2026</p>
+
+  <div class="bg-petrol2 border border-bone/8 rounded-2xl p-8 md:p-12 prose">
+
+    <p style="color:rgba(242,239,233,0.4);font-size:0.8rem;margin-bottom:2rem;">Eine ausführliche AGB durch einen Rechtsanwalt befindet sich derzeit in Ausarbeitung. Es gelten vorerst folgende Grundbedingungen.</p>
+
+    <h2>§ 1 Vertragsgegenstand</h2>
+    <p>Curevo (Inhaber: Niklas Weiß, Moosstraße 79A, 5020 Salzburg) erbringt KI-gestützte Automatisierungsdienstleistungen für Immobilienmakler im DACH-Raum. Der genaue Leistungsumfang wird individuell beim Onboarding schriftlich vereinbart.</p>
+
+    <h2>§ 2 Vergütung</h2>
+    <p>Die Vergütung richtet sich nach dem individuell vereinbarten Angebot. Rechnungen sind innerhalb von 14 Tagen nach Rechnungsstellung zu begleichen. Es gilt die Kleinunternehmerregelung gemäß § 6 Abs. 1 Z 27 UStG — Rechnungen werden ohne Umsatzsteuer ausgestellt.</p>
+
+    <h2>§ 3 Laufzeit & Kündigung</h2>
+    <p>Die Mindestlaufzeit beträgt 3 Monate. Danach ist der Vertrag monatlich mit einer Frist von 30 Tagen zum Monatsende kündbar. Die Kündigung hat schriftlich per E-Mail an <a href="mailto:info@curevo.at">info@curevo.at</a> zu erfolgen.</p>
+
+    <h2>§ 4 Pflichten des Kunden</h2>
+    <p>Der Kunde stellt alle für die Leistungserbringung notwendigen Zugänge und Informationen rechtzeitig zur Verfügung. Der Kunde ist für die Pflege seines Kalenders und die Aktualität seiner Objektinformationen selbst verantwortlich.</p>
+
+    <h2>§ 5 Haftung</h2>
+    <p>Curevo haftet nur für Schäden die auf grober Fahrlässigkeit oder Vorsatz beruhen. Die Haftung für entgangenen Gewinn oder mittelbare Schäden ist ausgeschlossen. Die Haftung ist auf die Höhe des zuletzt bezahlten Monatsentgelts begrenzt.</p>
+
+    <h2>§ 6 Datenschutz</h2>
+    <p>Es gilt die separate <a href="/datenschutz.html">Datenschutzerklärung</a> sowie der <a href="/avv.html">Auftragsverarbeitungsvertrag</a>. Kundendaten werden nach Vertragsende innerhalb von 30 Tagen gelöscht.</p>
+
+    <h2>§ 7 Anwendbares Recht</h2>
+    <p>Es gilt österreichisches Recht. Gerichtsstand ist Salzburg, Österreich.</p>
+
+    <p style="margin-top:2rem; padding-top:1.5rem; border-top: 1px solid rgba(242,239,233,0.08); font-size:0.75rem; color:rgba(242,239,233,0.25);">
+      Stand: April 2026 · Eine ausführliche AGB durch einen Rechtsanwalt befindet sich in Ausarbeitung.
+    </p>
+
+  </div>
+</main>
+
+<footer class="border-t border-bone/8 px-4 md:px-8 py-8 mt-12">
+  <div class="max-w-4xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4 font-mono text-[11px] text-bone/35">
+    <div class="flex items-center gap-3">
+      <span class="font-display text-base text-bone font-medium tracking-tight">Curevo</span>
+      <span>© 2026</span>
+      <span class="text-bone/20">·</span>
+      <span>Niklas Weiß</span>
+    </div>
+    <div class="flex gap-6">
+      <a href="/impressum.html"   class="hover:text-teal transition-colors">Impressum</a>
+      <a href="/datenschutz.html" class="hover:text-teal transition-colors">Datenschutz</a>
+      <a href="/agb.html"         class="hover:text-teal transition-colors">AGB</a>
+      <a href="/avv.html"         class="hover:text-teal transition-colors">AVV</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
