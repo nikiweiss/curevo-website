@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cookie-Einstellungen — Curevo</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          petrol:  '#0E1A1F', petrol2: '#1A2A30', petrol3: '#223740',
+          bone:    '#F2EFE9', bone2:   '#E5E0D6',
+          teal:    '#3A9B8A', teallt:  '#5DBAA9', sand: '#C9A87C', mute: '#8A9499',
+        },
+        fontFamily: {
+          display: ['Fraunces', 'ui-serif', 'Georgia', 'serif'],
+          ui:      ['Geist', 'ui-sans-serif', 'system-ui'],
+          mono:    ['"Geist Mono"', 'ui-monospace', 'monospace'],
+        },
+      }
+    }
+  };
+</script>
+<style>
+  html, body { background: #0E1A1F; }
+  * { font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; }
+  ::selection { background: #3A9B8A; color: #0E1A1F; }
+</style>
+</head>
+<body class="bg-petrol text-bone antialiased min-h-screen">
+
+<nav class="border-b border-bone/8 px-4 md:px-8 py-4">
+  <div class="max-w-4xl mx-auto flex items-center justify-between">
+    <a href="/" class="font-display text-xl text-bone font-medium tracking-tight">Curevo</a>
+    <a href="/" class="font-mono text-[11px] text-bone/50 tracking-[0.15em] uppercase hover:text-teal transition-colors">← Zurück</a>
+  </div>
+</nav>
+
+<main class="max-w-4xl mx-auto px-4 md:px-8 py-16 md:py-24">
+
+  <p class="font-mono text-[11px] text-teal tracking-[0.2em] uppercase mb-4">Einstellungen</p>
+  <h1 class="font-display font-light text-bone text-4xl md:text-5xl leading-[1.05] tracking-[-0.02em] mb-4">Cookie-Einstellungen</h1>
+  <p class="text-bone/55 text-sm leading-relaxed mb-12 max-w-2xl">
+    Wir verwenden Cookies um die Funktionalität der Website sicherzustellen. Du kannst hier deine Einstellungen jederzeit anpassen.
+  </p>
+
+  <!-- Cookie Kategorien -->
+  <div class="space-y-4 mb-12">
+
+    <!-- Notwendig -->
+    <div class="bg-petrol2 border border-bone/8 rounded-2xl p-6 md:p-8">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-2">
+            <h2 class="font-display font-light text-bone text-xl">Notwendige Cookies</h2>
+            <span class="font-mono text-[10px] text-teal tracking-widest uppercase bg-teal/10 border border-teal/20 px-2 py-0.5 rounded-full">Immer aktiv</span>
+          </div>
+          <p class="text-bone/55 text-sm leading-relaxed">Diese Cookies sind für den Betrieb der Website unbedingt erforderlich. Sie ermöglichen grundlegende Funktionen wie die Seitennavigation und den Zugriff auf sichere Bereiche.</p>
+          <div class="mt-4 space-y-2">
+            <div class="flex items-center gap-3 text-xs text-bone/40 font-mono">
+              <span class="text-teal">·</span>
+              <span>Session-Cookie — läuft beim Schließen des Browsers ab</span>
+            </div>
+            <div class="flex items-center gap-3 text-xs text-bone/40 font-mono">
+              <span class="text-teal">·</span>
+              <span>Cookie-Einstellungen — 1 Jahr</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex-shrink-0">
+          <div class="w-12 h-6 bg-teal rounded-full flex items-center justify-end pr-1 opacity-60 cursor-not-allowed">
+            <div class="w-4 h-4 bg-white rounded-full"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analyse -->
+    <div class="bg-petrol2 border border-bone/8 rounded-2xl p-6 md:p-8">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex-1">
+          <h2 class="font-display font-light text-bone text-xl mb-2">Analyse-Cookies</h2>
+          <p class="text-bone/55 text-sm leading-relaxed">Diese Cookies helfen uns zu verstehen wie Besucher die Website nutzen. Alle Daten werden anonymisiert erhoben.</p>
+          <div class="mt-4 space-y-2">
+            <div class="flex items-center gap-3 text-xs text-bone/40 font-mono">
+              <span class="text-bone/30">·</span>
+              <span>Derzeit keine Analyse-Tools aktiv</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex-shrink-0">
+          <button id="toggle-analyse" onclick="toggleCookie(this)"
+                  class="w-12 h-6 bg-petrol3 border border-bone/15 rounded-full flex items-center justify-start pl-1 transition-all duration-200 cursor-pointer">
+            <div class="w-4 h-4 bg-bone/40 rounded-full transition-all duration-200"></div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Marketing -->
+    <div class="bg-petrol2 border border-bone/8 rounded-2xl p-6 md:p-8">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex-1">
+          <h2 class="font-display font-light text-bone text-xl mb-2">Marketing-Cookies</h2>
+          <p class="text-bone/55 text-sm leading-relaxed">Diese Cookies werden verwendet um Werbung relevanter für dich zu gestalten. Curevo schaltet derzeit keine bezahlte Werbung.</p>
+          <div class="mt-4 space-y-2">
+            <div class="flex items-center gap-3 text-xs text-bone/40 font-mono">
+              <span class="text-bone/30">·</span>
+              <span>Derzeit keine Marketing-Cookies aktiv</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex-shrink-0">
+          <button id="toggle-marketing" onclick="toggleCookie(this)"
+                  class="w-12 h-6 bg-petrol3 border border-bone/15 rounded-full flex items-center justify-start pl-1 transition-all duration-200 cursor-pointer">
+            <div class="w-4 h-4 bg-bone/40 rounded-full transition-all duration-200"></div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Buttons -->
+  <div class="flex flex-col sm:flex-row gap-3">
+    <button onclick="saveSettings()" class="inline-flex items-center justify-center gap-2 bg-teal text-petrol rounded-full px-6 py-3 font-ui font-medium text-sm hover:bg-teallt transition-colors">
+      Einstellungen speichern
+    </button>
+    <button onclick="acceptAll()" class="inline-flex items-center justify-center gap-2 border border-bone/20 text-bone/70 rounded-full px-6 py-3 font-ui font-medium text-sm hover:border-bone/40 hover:text-bone transition-colors">
+      Alle akzeptieren
+    </button>
+    <button onclick="rejectAll()" class="inline-flex items-center justify-center gap-2 border border-bone/10 text-bone/40 rounded-full px-6 py-3 font-ui font-medium text-sm hover:border-bone/20 hover:text-bone/60 transition-colors">
+      Nur notwendige
+    </button>
+  </div>
+
+  <p class="mt-8 text-xs text-bone/30 leading-relaxed max-w-2xl">
+    Weitere Informationen findest du in unserer <a href="/datenschutz.html" class="text-teal hover:text-teallt underline underline-offset-2">Datenschutzerklärung</a>. Deine Einstellungen werden lokal gespeichert und können jederzeit geändert werden.
+  </p>
+
+</main>
+
+<footer class="border-t border-bone/8 px-4 md:px-8 py-8 mt-12">
+  <div class="max-w-4xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4 font-mono text-[11px] text-bone/35">
+    <div class="flex items-center gap-3">
+      <span class="font-display text-base text-bone font-medium tracking-tight">Curevo</span>
+      <span>© 2026</span>
+      <span class="text-bone/20">·</span>
+      <span>Niklas Weiß</span>
+    </div>
+    <div class="flex gap-6">
+      <a href="/impressum.html"   class="hover:text-teal transition-colors">Impressum</a>
+      <a href="/datenschutz.html" class="hover:text-teal transition-colors">Datenschutz</a>
+      <a href="/agb.html"         class="hover:text-teal transition-colors">AGB</a>
+      <a href="/avv.html"         class="hover:text-teal transition-colors">AVV</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function toggleCookie(btn) {
+    const dot = btn.querySelector('div');
+    const isOn = btn.classList.contains('bg-teal');
+    if (isOn) {
+      btn.classList.remove('bg-teal', 'justify-end', 'pr-1');
+      btn.classList.add('bg-petrol3', 'justify-start', 'pl-1');
+      dot.classList.remove('bg-white');
+      dot.classList.add('bg-bone/40');
+    } else {
+      btn.classList.add('bg-teal', 'justify-end', 'pr-1');
+      btn.classList.remove('bg-petrol3', 'justify-start', 'pl-1');
+      dot.classList.add('bg-white');
+      dot.classList.remove('bg-bone/40');
+    }
+  }
+
+  function saveSettings() {
+    localStorage.setItem('curevo-cookies', 'saved');
+    showConfirmation('Einstellungen gespeichert.');
+  }
+
+  function acceptAll() {
+    ['toggle-analyse','toggle-marketing'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (!btn.classList.contains('bg-teal')) toggleCookie(btn);
+    });
+    localStorage.setItem('curevo-cookies', 'all');
+    showConfirmation('Alle Cookies akzeptiert.');
+  }
+
+  function rejectAll() {
+    ['toggle-analyse','toggle-marketing'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn.classList.contains('bg-teal')) toggleCookie(btn);
+    });
+    localStorage.setItem('curevo-cookies', 'necessary');
+    showConfirmation('Nur notwendige Cookies aktiv.');
+  }
+
+  function showConfirmation(msg) {
+    const div = document.createElement('div');
+    div.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 bg-teal text-petrol font-mono text-[11px] tracking-widest uppercase px-6 py-3 rounded-full shadow-lg';
+    div.textContent = msg;
+    document.body.appendChild(div);
+    setTimeout(() => div.remove(), 2500);
+  }
+</script>
+
+</body>
+</html>
