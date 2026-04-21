@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Curevo — KI-Automatisierung für Immobilienmakler</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          petrol:   '#0E1A1F',
+          petrol2:  '#1A2A30',
+          petrol3:  '#223740',
+          bone:     '#F2EFE9',
+          bone2:    '#E5E0D6',
+          teal:     '#3A9B8A',
+          teallt:   '#5DBAA9',
+          sand:     '#C9A87C',
+          mute:     '#8A9499',
+        },
+        fontFamily: {
+          display: ['Fraunces', 'ui-serif', 'Georgia', 'serif'],
+          ui:      ['Geist', 'ui-sans-serif', 'system-ui'],
+          mono:    ['"Geist Mono"', 'ui-monospace', 'monospace'],
+        },
+      }
+    }
+  };
+</script>
+
+<style>
+  html, body { background: #0E1A1F; }
+  * { font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; }
+
+  /* Noise overlay – subtle grain */
+  .noise-overlay {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95  0 0 0 0 0.94  0 0 0 0 0.91  0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  .bg-noise {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.3 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* Word pull-up animation */
+  @keyframes pullUp {
+    0%   { transform: translateY(28px); opacity: 0; }
+    100% { transform: translateY(0);    opacity: 1; }
+  }
+  .word {
+    display: inline-block;
+    transform: translateY(28px);
+    opacity: 0;
+    animation: pullUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes fadeUp {
+    0%   { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0);    opacity: 1; }
+  }
+  .fade-up {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Scroll-triggered reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-word {
+    opacity: 0.18;
+    transition: opacity 0.6s ease;
+  }
+  .reveal-word.in { opacity: 1; }
+
+  /* Card entrance */
+  .card-enter {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+    transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .card-enter.in {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  /* Hero "pulse ridge" — animated SVG ridge lines */
+  @keyframes ridgeDrift {
+    0%, 100% { transform: translateX(0); }
+    50%      { transform: translateX(-2%); }
+  }
+  .ridge-drift { animation: ridgeDrift 28s ease-in-out infinite; }
+
+  @keyframes ridgeFloat {
+    0%, 100% { transform: translateX(0); }
+    50%      { transform: translateX(2%); }
+  }
+  .ridge-float { animation: ridgeFloat 34s ease-in-out infinite; }
+
+  /* Live pipeline — animated dots traveling through pipeline */
+  @keyframes flowDot {
+    0%   { offset-distance: 0%;   opacity: 0; }
+    8%   { opacity: 1; }
+    92%  { opacity: 1; }
+    100% { offset-distance: 100%; opacity: 0; }
+  }
+  .flow-dot-1 { animation: flowDot 5s linear infinite; animation-delay: 0s; }
+  .flow-dot-2 { animation: flowDot 5s linear infinite; animation-delay: 1.6s; }
+  .flow-dot-3 { animation: flowDot 5s linear infinite; animation-delay: 3.2s; }
+
+  /* Blinking status dot */
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.4; transform: scale(0.85); }
+  }
+  .pulse { animation: pulse 1.8s ease-in-out infinite; }
+
+  /* Logo asterisk that slowly rotates */
+  @keyframes slowspin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  .slowspin { animation: slowspin 20s linear infinite; transform-origin: center; }
+
+  /* CTA arrow hover */
+  .cta-group:hover .cta-arrow { transform: translateX(2px); }
+  .cta-arrow { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+
+  /* Hide scrollbar on navbar if overflow */
+  .nav-scroll::-webkit-scrollbar { display: none; }
+
+  /* Selection */
+  ::selection { background: #3A9B8A; color: #0E1A1F; }
+</style>
+</head>
+<body class="bg-petrol text-bone antialiased">
+
+<!-- ╔═══════════════════════════════════════════════════════════════╗
+     SECTION 1 — HERO
+     ╚═══════════════════════════════════════════════════════════════╝ -->
+<section class="h-screen min-h-[700px] w-full p-3 sm:p-4 md:p-6">
+  <div class="relative w-full h-full rounded-2xl md:rounded-[2rem] overflow-hidden bg-petrol">
+
+    <!-- Static workflow/infrastructure pattern background -->
+    <div class="absolute inset-0 pointer-events-none">
+      <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stop-color="#0E1A1F"/>
+            <stop offset="55%" stop-color="#152630"/>
+            <stop offset="100%" stop-color="#0E1A1F"/>
+          </linearGradient>
+          <radialGradient id="glow" cx="80%" cy="30%" r="55%">
+            <stop offset="0%"   stop-color="#3A9B8A" stop-opacity="0.14"/>
+            <stop offset="100%" stop-color="#3A9B8A" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="glow2" cx="15%" cy="80%" r="45%">
+            <stop offset="0%"   stop-color="#C9A87C" stop-opacity="0.08"/>
+            <stop offset="100%" stop-color="#C9A87C" stop-opacity="0"/>
+          </radialGradient>
+
+          <!-- Subtle dot grid pattern -->
+          <pattern id="dotgrid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <circle cx="1" cy="1" r="1" fill="#3A9B8A" fill-opacity="0.08"/>
+          </pattern>
+
+          <!-- Arrow marker -->
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#3A9B8A" fill-opacity="0.5"/>
+          </marker>
+          <marker id="arrowSand" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#C9A87C" fill-opacity="0.45"/>
+          </marker>
+        </defs>
+
+        <!-- Base gradient + glows + dotgrid -->
+        <rect width="1600" height="900" fill="url(#skyGrad)"/>
+        <rect width="1600" height="900" fill="url(#dotgrid)"/>
+        <rect width="1600" height="900" fill="url(#glow)"/>
+        <rect width="1600" height="900" fill="url(#glow2)"/>
+
+        <!-- Workflow pattern: clean pipelines — each line starts at a node and ends at an arrow or node -->
+        <g stroke-linecap="round" stroke-linejoin="round" fill="none">
+
+          <!-- UPPER LEFT CLUSTER — two parallel intake lines merging right -->
+          <g stroke="#3A9B8A" stroke-opacity="0.32" stroke-width="1.5">
+            <!-- intake A: (40,160) -> junction (360,160) -> bend down -> (360,260) -> right to (700,260) arrow -->
+            <path d="M 40 160 L 340 160 Q 360 160 360 180 L 360 240 Q 360 260 380 260 L 700 260" marker-end="url(#arrow)"/>
+            <!-- intake B: (40,260) -> junction (260,260) -> merge down into A at y=260 -->
+            <path d="M 40 260 L 240 260 Q 260 260 260 280 L 260 360 Q 260 380 280 380 L 560 380" marker-end="url(#arrow)"/>
+          </g>
+
+          <!-- UPPER RIGHT CLUSTER — fan-out from central node -->
+          <g stroke="#3A9B8A" stroke-opacity="0.28" stroke-width="1.5">
+            <!-- hub at (900,180), splits into two outputs -->
+            <path d="M 900 180 L 1180 180 Q 1200 180 1200 200 L 1200 260 Q 1200 280 1220 280 L 1540 280" marker-end="url(#arrow)"/>
+            <path d="M 900 180 L 1040 180 Q 1060 180 1060 200 L 1060 340 Q 1060 360 1080 360 L 1400 360" marker-end="url(#arrow)"/>
+          </g>
+
+          <!-- MIDDLE SAND ACCENT LINES — just two clean horizontals -->
+          <g stroke="#C9A87C" stroke-opacity="0.26" stroke-width="1.5">
+            <path d="M 80 500 L 400 500 Q 420 500 420 520 L 420 600 Q 420 620 440 620 L 760 620" marker-end="url(#arrowSand)"/>
+            <path d="M 1000 540 L 1260 540 Q 1280 540 1280 560 L 1280 640 Q 1280 660 1300 660 L 1560 660" marker-end="url(#arrowSand)"/>
+          </g>
+
+          <!-- LOWER LEFT CLUSTER — single clean pipe -->
+          <g stroke="#3A9B8A" stroke-opacity="0.22" stroke-width="1.5">
+            <path d="M 40 740 L 280 740 Q 300 740 300 760 L 300 820" marker-end="url(#arrow)"/>
+          </g>
+
+          <!-- LOWER RIGHT CLUSTER — single clean pipe -->
+          <g stroke="#3A9B8A" stroke-opacity="0.22" stroke-width="1.5">
+            <path d="M 860 760 L 1100 760 Q 1120 760 1120 780 L 1120 860" marker-end="url(#arrow)"/>
+          </g>
+
+          <!-- NODES — only at line starts (inputs) and key junctions -->
+          <g fill="#3A9B8A">
+            <!-- Input nodes (line starts) -->
+            <circle cx="40"  cy="160" r="3"/>
+            <circle cx="40"  cy="260" r="3"/>
+            <circle cx="900" cy="180" r="4"/>
+            <circle cx="40"  cy="740" r="3"/>
+            <circle cx="860" cy="760" r="3"/>
+          </g>
+          <g fill="#C9A87C">
+            <circle cx="80"   cy="500" r="3"/>
+            <circle cx="1000" cy="540" r="3"/>
+          </g>
+
+          <!-- Rings on key source nodes -->
+          <g fill="none" stroke-width="1">
+            <circle cx="40"  cy="160" r="8"  stroke="#3A9B8A" stroke-opacity="0.3"/>
+            <circle cx="900" cy="180" r="9"  stroke="#3A9B8A" stroke-opacity="0.3"/>
+            <circle cx="40"  cy="740" r="8"  stroke="#3A9B8A" stroke-opacity="0.25"/>
+          </g>
+        </g>
+      </svg>
+
+      <!-- Noise overlay -->
+      <div class="absolute inset-0 noise-overlay opacity-[0.1] mix-blend-overlay"></div>
+
+      <!-- Radial fade from center outward so text area stays calm -->
+      <div class="absolute inset-0" style="background: radial-gradient(ellipse at 50% 65%, rgba(14,26,31,0.55) 0%, rgba(14,26,31,0.15) 45%, rgba(14,26,31,0.7) 100%);"></div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="absolute top-0 left-1/2 -translate-x-1/2 z-20 bg-petrol/90 backdrop-blur-sm border border-bone/10 border-t-0 rounded-b-xl md:rounded-b-2xl">
+     <ul class="flex items-center gap-4 sm:gap-7 md:gap-10 lg:gap-12 px-4 py-2.5 md:px-8 md:py-3 text-[11px] sm:text-xs md:text-[13px] font-ui font-medium tracking-wide">
+  <li><a href="#warum"      class="text-bone/75 hover:text-bone transition-colors">Warum Curevo</a></li>
+  <li><a href="#produkt"    class="text-bone/75 hover:text-bone transition-colors">Produkt</a></li>
+  <li><a href="#kompatibel" class="text-bone/75 hover:text-bone transition-colors">Kompatibilität</a></li>
+  <li><a href="#dsgvo"      class="text-bone/75 hover:text-bone transition-colors">Datenschutz</a></li>
+  <li><a href="#faq"        class="text-bone/75 hover:text-bone transition-colors">FAQ</a></li>
+  <li><a href="#kontakt"    class="text-bone/75 hover:text-bone transition-colors">Kontakt</a></li>
+</ul>
+    </nav>
+
+    <!-- Hero content: bottom-aligned 12-col -->
+    <div class="absolute bottom-0 left-0 right-0 z-10 px-4 md:px-8 lg:px-12 pb-8 md:pb-10">
+      <div class="grid grid-cols-12 gap-4 md:gap-6 items-end">
+
+        <!-- Big wordmark -->
+        <div class="col-span-12 lg:col-span-8 relative">
+          <h1 class="font-display font-medium text-bone leading-[0.82] tracking-[-0.045em]
+                     text-[23vw] lg:text-[18vw] xl:text-[17.5vw]">
+            <span class="word" style="animation-delay: 0.05s">Cu</span><span class="word" style="animation-delay: 0.15s">re</span><span class="word" style="animation-delay: 0.25s">vo</span>
+          </h1>
+        </div>
+
+        <!-- Right column: description + CTA -->
+        <div class="col-span-12 lg:col-span-4 flex flex-col gap-5 lg:pb-4">
+          <p class="fade-up text-bone/70 text-sm md:text-[15px] leading-[1.55] max-w-md"
+             style="animation-delay: 0.55s">
+            Jede Anfrage über Immobilienportale oder Ihre eigene Website wird in unter 2 Minuten beantwortet, vorqualifiziert und direkt in Ihr CRM-System übertragen – und das ist erst der Anfang. Sie müssen nicht mal den Laptop aufklappen.
+          </p>
+
+          <div class="fade-up flex flex-col sm:flex-row gap-3" style="animation-delay: 0.75s">
+            <a href="#kontakt"
+               class="cta-group inline-flex items-center justify-between gap-6 bg-bone text-petrol rounded-full pl-5 pr-1.5 py-1.5 font-ui font-medium text-sm md:text-[15px] hover:bg-white transition-colors w-full sm:w-auto">
+              <span>Erstgespräch vereinbaren</span>
+              <span class="flex items-center justify-center w-9 h-9 rounded-full bg-petrol text-bone">
+                <svg class="cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </span>
+            </a>
+
+            <a href="#produkt"
+               class="inline-flex items-center justify-center gap-2 border border-bone/25 text-bone/85 rounded-full px-5 py-2.5 font-ui font-medium text-sm md:text-[15px] hover:border-bone/60 hover:text-bone transition-colors w-full sm:w-auto">
+              Wie es funktioniert
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╔═══════════════════════════════════════════════════════════════╗
+     SECTION 2 — ABOUT / MANIFESTO
+     ╚═══════════════════════════════════════════════════════════════╝ -->
+<section id="warum" class="relative bg-petrol py-24 md:py-36 px-4 md:px-8">
+  <div class="max-w-6xl mx-auto">
+
+    <div class="bg-petrol2 border border-bone/8 rounded-2xl md:rounded-3xl px-6 md:px-14 py-16 md:py-24 text-center relative overflow-hidden">
+
+      <!-- decorative corner marks -->
+      <span class="absolute top-4 left-4 font-mono text-[10px] text-bone/35 tracking-widest">// 01</span>
+      <span class="absolute top-4 right-4 font-mono text-[10px] text-bone/35 tracking-widest">WARUM CUREVO</span>
+
+      <p class="font-mono text-[11px] md:text-xs text-teal tracking-[0.2em] uppercase mb-8 reveal">
+        Automatisierung für Makler im DACH-Raum.
+      </p>
+
+      <h2 class="font-display font-light leading-[0.95] tracking-[-0.025em] text-bone
+                 text-[32px] sm:text-5xl md:text-6xl lg:text-7xl max-w-4xl mx-auto">
+        <span class="manifest-words">Der erste Makler</span>
+        <span class="manifest-words italic font-display text-sand">der antwortet</span>
+        <span class="manifest-words">gewinnt —</span>
+        <span class="manifest-words italic font-display text-sand">immer.</span>
+      </h2>
+
+      <div class="mt-12 md:mt-16 max-w-2xl mx-auto">
+        <p class="body-reveal text-bone/70 text-sm md:text-base leading-[1.7]">
+          78% der Käufer entscheiden sich für den Makler der zuerst antwortet. 
+          Nicht den erfahrensten — den schnellsten. Curevo antwortet in unter 
+          zwei Minuten, qualifiziert jeden Lead automatisch — von heiß bis kalt — 
+          und du siehst auf einen Blick wo deine Zeit wirklich zählt. 
+          Kein neues Tool zum Lernen. Keine App im Browser. Kein manueller 
+          Aufwand. Es läuft im Hintergrund — unsichtbar, aber immer wach. 
+          Während du beim Kundentermin bist, schläfst oder einfach Pause machst.
+        </p>
+      </div>
+
+<!-- stats row -->
+<div class="mt-14 md:mt-20 grid grid-cols-3 gap-4 md:gap-10 reveal">
+  <div class="border-t border-bone/12 pt-5">
+    <div class="font-display text-3xl md:text-5xl font-light text-bone">&lt;&nbsp;2<span class="text-sand">min</span></div>
+    <div class="font-mono text-[10px] md:text-xs text-bone/50 tracking-widest uppercase mt-2">Reaktionszeit</div>
+  </div>
+  <div class="border-t border-bone/12 pt-5">
+    <div class="font-display text-3xl md:text-5xl font-light text-bone">24<span class="text-sand">/7</span></div>
+    <div class="font-mono text-[10px] md:text-xs text-bone/50 tracking-widest uppercase mt-2">Verfügbarkeit</div>
+  </div>
+<div class="border-t border-bone/12 pt-5">
+  <div class="font-display text-3xl md:text-5xl font-light text-sand">0</div>
+  <div class="font-mono text-[10px] md:text-xs text-bone/50 tracking-widest uppercase mt-2">Verlorene Leads</div>
+</div>
+</div>
+
+    </div>
+  </div>
+</section>
+<!-- ╔═══════════════════════════════════════════════════════════════╗
+     SECTION 3 — FEATURES
+     ╚═══════════════════════════════════════════════════════════════╝ -->
+<section id="produkt" class="relative min-h-screen bg-petrol py-20 md:py-28 px-4 md:px-8 overflow-hidden">
+  <div class="absolute inset-0 bg-noise opacity-[0.08] pointer-events-none"></div>
+
+  <div class="max-w-7xl mx-auto relative">
+
+    <!-- Section header -->
+    <div class="mb-12 md:mb-16 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+      <div>
+        <p class="font-mono text-[11px] text-teal tracking-[0.2em] uppercase mb-4 reveal">// 02 — Architektur</p>
+        <h2 class="font-display font-light text-bone leading-[1.05] tracking-[-0.02em] text-3xl sm:text-4xl md:text-5xl max-w-2xl">
+          <span class="block">Infrastruktur.</span>
+          <span class="block text-bone/50">Die verkauft während du schläfst.</span>
+        </h2>
+      </div>
+      <div class="max-w-sm text-sm text-bone/55 leading-relaxed reveal">
+        Kein neues Login, keine fremde Plattform. Läuft in deinem E-Mail-Postfach, in deinem CRM, auf deutschen Servern. Du behältst alles.
+      </div>
+    </div>
+
+    <!-- 4-column card grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 lg:h-[540px]">
+
+      <!-- CARD 1 — Live Pipeline Visual -->
+      <div class="card-enter relative rounded-2xl overflow-hidden bg-gradient-to-br from-petrol2 to-petrol3 border border-bone/8 min-h-[420px] lg:min-h-0 flex flex-col">
+
+        <div class="relative p-6 pb-0 z-10">
+          <p class="font-display text-2xl text-bone leading-tight">Dein Lead-Fluss —<br/>live.</p>
+        </div>
+
+        <div class="relative flex-1 min-h-[320px]">
+          <svg viewBox="0 0 400 440" class="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <path id="pipe"
+                    d="M 60 50 L 60 150 Q 60 180 90 180 L 310 180 Q 340 180 340 210 L 340 280 Q 340 310 310 310 L 90 310 Q 60 310 60 340 L 60 390"
+                    fill="none"/>
+              <linearGradient id="pipeGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stop-color="#3A9B8A" stop-opacity="0.55"/>
+                <stop offset="100%" stop-color="#3A9B8A" stop-opacity="0.2"/>
+              </linearGradient>
+            </defs>
+
+            <use href="#pipe" stroke="url(#pipeGrad)" stroke-width="1.5" stroke-dasharray="3 4"/>
+
+            <g>
+              <!-- 1. Lead Eingang -->
+              <circle cx="60" cy="50" r="5" fill="#3A9B8A"/>
+              <circle cx="60" cy="50" r="10" fill="none" stroke="#3A9B8A" stroke-opacity="0.3"/>
+              <text x="80" y="54" fill="#F2EFE9" font-family="Geist Mono, monospace" font-size="11">Lead Eingang</text>
+
+              <!-- 2. KI-Parsing -->
+              <circle cx="70" cy="175" r="5" fill="#3A9B8A"/>
+              <text x="70" y="200" text-anchor="middle" fill="#F2EFE9" font-family="Geist Mono, monospace" font-size="11">KI-Parsing</text>
+
+              <!-- 3. Qualifizierung -->
+              <circle cx="333" cy="187" r="5" fill="#3A9B8A"/>
+              <text x="333" y="168" text-anchor="middle" fill="#F2EFE9" font-family="Geist Mono, monospace" font-size="11">Qualifizierung</text>
+
+              <!-- 4. Sofortantwort -->
+              <circle cx="333" cy="303" r="5" fill="#3A9B8A"/>
+              <text x="333" y="333" text-anchor="middle" fill="#F2EFE9" font-family="Geist Mono, monospace" font-size="11">Sofortantwort</text>
+
+              <!-- 5. CRM Update -->
+              <circle cx="68" cy="316" r="5" fill="#3A9B8A"/>
+              <text x="70" y="296" text-anchor="middle" fill="#F2EFE9" font-family="Geist Mono, monospace" font-size="11">CRM Update</text>
+
+              <!-- 6. Termin gebucht -->
+              <circle cx="60" cy="390" r="5" fill="#C9A87C"/>
+              <circle cx="60" cy="390" r="10" fill="none" stroke="#C9A87C" stroke-opacity="0.45"/>
+              <text x="80" y="394" fill="#F2EFE9" font-family="Geist Mono, monospace" font-size="11">Termin gebucht</text>
+            </g>
+
+            <circle r="4" fill="#5DBAA9" class="flow-dot-1" style="offset-path: path('M 60 50 L 60 150 Q 60 180 90 180 L 310 180 Q 340 180 340 210 L 340 280 Q 340 310 310 310 L 90 310 Q 60 310 60 340 L 60 390');"/>
+            <circle r="4" fill="#5DBAA9" class="flow-dot-2" style="offset-path: path('M 60 50 L 60 150 Q 60 180 90 180 L 310 180 Q 340 180 340 210 L 340 280 Q 340 310 310 310 L 90 310 Q 60 310 60 340 L 60 390');"/>
+            <circle r="4" fill="#5DBAA9" class="flow-dot-3" style="offset-path: path('M 60 50 L 60 150 Q 60 180 90 180 L 310 180 Q 340 180 340 210 L 340 280 Q 340 310 310 310 L 90 310 Q 60 310 60 340 L 60 390');"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- CARD 2 — Sofortantwort -->
+      <div class="card-enter relative rounded-2xl bg-petrol2 border border-bone/8 p-6 md:p-7 flex flex-col min-h-[380px] lg:min-h-0">
+        <div class="flex items-start justify-between mb-6">
+          <div class="w-11 h-11 rounded-xl bg-teal/15 border border-teal/30 flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <span class="font-mono text-[10px] text-bone/40 tracking-widest">01</span>
+        </div>
+
+        <h3 class="font-display text-xl md:text-[22px] text-bone leading-tight mb-4">Sofortantwort unter 2 Minuten</h3>
+
+        <ul class="flex-1 space-y-3 text-sm text-bone/65">
+          <li class="flex gap-2.5">
+            <svg class="flex-shrink-0 mt-0.5" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Template-basiert, KI füllt nur Variablen</span>
+          </li>
+          <li class="flex gap-2.5">
+            <svg class="flex-shrink-0 mt-0.5" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Sentiment-Check: wütende Leads → direkt zu dir</span>
+          </li>
+          <li class="flex gap-2.5">
+            <svg class="flex-shrink-0 mt-0.5" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Aus deinem E-Mail-Postfach, nicht aus externer Domain</span>
+          </li>
+          <li class="flex gap-2.5">
+            <svg class="flex-shrink-0 mt-0.5" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>DE/EN Erkennung automatisch</span>
+          </li>
+        </ul>
+      </div>
+
+<!-- CARD 3 — Qualifizierung -->
+<div class="card-enter relative rounded-2xl bg-petrol2 border border-bone/8 p-6 md:p-7 flex flex-col min-h-[380px] lg:min-h-0">
+  <div class="flex items-start justify-between mb-6">
+    <div class="w-11 h-11 rounded-xl bg-teal/15 border border-teal/30 flex items-center justify-center">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L3 7 l9 5 9-5 -9-5z"/><polyline points="3 17 12 22 21 17"/><polyline points="3 12 12 17 21 12"/></svg>
+    </div>
+    <span class="font-mono text-[10px] text-bone/40 tracking-widest">02</span>
+  </div>
+
+  <h3 class="font-display text-xl md:text-[22px] text-bone leading-tight mb-4">Qualifizierung nach deinen Regeln</h3>
+
+  <ul class="flex-1 space-y-3 text-sm text-bone/65">
+    <li class="flex gap-2.5">
+      <svg class="flex-shrink-0 mt-0.5" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      <span>Wissensbasis aus deinem Onboarding</span>
+    </li>
+    <li class="flex gap-2.5">
+      <svg class="flex-shrink-0 mt-0.5" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      <span>Kriterien ändern sich? Wissensbasis wird einfach aktualisiert.</span>
+    </li>
+    <li class="flex gap-2.5">
+      <svg class="flex-shrink-0 mt-0.5" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      <span>Drei Pfade: Heiß · Warm · Kalt</span>
+    </li>
+    <li class="flex gap-2.5">
+      <svg class="flex-shrink-0 mt-0.5" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      <span>Heiße Leads bekommen sofort deinen Kalenderlink</span>
+    </li>
+  </ul>
+</div>
+
+      <!-- CARD 4 — CRM & Monitoring -->
+      <div class="card-enter relative rounded-2xl bg-petrol2 border border-bone/8 p-6 md:p-7 flex flex-col min-h-[380px] lg:min-h-0">
+        <div class="flex items-start justify-between mb-6">
+          <div class="w-11 h-11 rounded-xl bg-teal/15 border border-teal/30 flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          </div>
+          <span class="font-mono text-[10px] text-bone/40 tracking-widest">03</span>
+        </div>
+
+        <h3 class="font-display text-xl md:text-[22px] text-bone leading-tight mb-4">CRM — immer aktuell</h3>
+
+        <ul class="flex-1 space-y-3 text-sm text-bone/65">
+          <li class="flex gap-2.5">
+            <svg class="flex-shrink-0 mt-0.5" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Jeder Schritt automatisch protokolliert</span>
+          </li>
+          <li class="flex gap-2.5">
+            <svg class="flex-shrink-0 mt-0.5" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>24/7 Überwachung · Sofort-Alert bei Fehler</span>
+          </li>
+          <li class="flex gap-2.5">
+            <svg class="flex-shrink-0 mt-0.5" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Wöchentlicher Überblick per Mail</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+        <div class="mt-10 text-center reveal">
+      <p class="font-mono text-[11px] text-bone/40 tracking-[0.15em] uppercase mb-3">Noch nicht genug?</p>
+      <p class="font-mono text-[11px] text-bone/25 tracking-[0.15em] uppercase">
+        Google Reviews &nbsp;·&nbsp; Besichtigungserinnerung &nbsp;·&nbsp; Nachqualifizierung &nbsp;·&nbsp; und mehr
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ╔═══════════════════════════════════════════════════════════════╗
+     SECTION 3 — KOMPATIBILITÄT TICKER
+     ╚═══════════════════════════════════════════════════════════════╝ -->
+<section id="kompatibel" class="relative bg-petrol py-16 md:py-20 overflow-hidden border-t border-bone/6">
+
+  <div class="max-w-4xl mx-auto px-4 md:px-8 mb-10 reveal">
+    <p class="font-mono text-[11px] text-teal tracking-[0.2em] uppercase mb-3">// 03 — Kompatibilität</p>
+    <h2 class="font-display font-light text-bone text-3xl sm:text-4xl md:text-5xl leading-[1.05] tracking-[-0.02em]">
+      Läuft mit dem<br/><span class="text-bone/50">was du schon nutzt.</span>
+    </h2>
+  </div>
+
+  <!-- Ticker wrapper -->
+  <div class="relative w-full overflow-hidden">
+
+    <!-- Fade edges -->
+    <div class="absolute left-0 top-0 bottom-0 w-24 z-10" style="background: linear-gradient(to right, #0E1A1F, transparent);"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-24 z-10" style="background: linear-gradient(to left, #0E1A1F, transparent);"></div>
+
+    <!-- Ticker track -->
+    <div class="ticker-track flex gap-0 whitespace-nowrap" style="width: max-content;">
+
+      <!-- Items — duplicated for seamless loop -->
+      <div class="ticker-items flex gap-0">
+        <!-- Email -->
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span>Gmail</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span>Outlook</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span>Apple Mail</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span>Yahoo Mail</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span>IMAP</span></div>
+        <!-- CRM -->
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg><span>Airtable</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg><span>Google Sheets</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg><span>Notion</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg><span>HubSpot</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg><span>Pipedrive</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg><span>Zoho CRM</span></div>
+        <!-- Terminbuchung -->
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Calendly</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Cal.com</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Google Calendar</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Microsoft Bookings</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Acuity Scheduling</span></div>
+        <!-- Portale -->
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V9.5z"/></svg><span>ImmoScout24</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V9.5z"/></svg><span>Willhaben</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V9.5z"/></svg><span>Immo.at</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V9.5z"/></svg><span>Immowelt</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V9.5z"/></svg><span>Kleinanzeigen</span></div>
+      </div>
+
+      <!-- Duplicate for seamless loop -->
+      <div class="ticker-items flex gap-0" aria-hidden="true">
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span>Gmail</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span>Outlook</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span>Apple Mail</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span>Yahoo Mail</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span>IMAP</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg><span>Airtable</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg><span>Google Sheets</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg><span>Notion</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg><span>HubSpot</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg><span>Pipedrive</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg><span>Zoho CRM</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Calendly</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Cal.com</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Google Calendar</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Microsoft Bookings</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Acuity Scheduling</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V9.5z"/></svg><span>ImmoScout24</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V9.5z"/></svg><span>Willhaben</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V9.5z"/></svg><span>Immo.at</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V9.5z"/></svg><span>Immowelt</span></div>
+        <div class="ticker-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V9.5z"/></svg><span>Kleinanzeigen</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Subtext -->
+  <div class="text-center mt-8 px-4">
+    <p class="font-mono text-[11px] text-bone/30 tracking-[0.12em]">
+      Dein Tool nicht dabei? <a href="#kontakt" class="text-teal hover:text-teallt transition-colors underline underline-offset-2">Schreib uns</a> — wir unterstützen alles was über n8n möglich ist.
+    </p>
+  </div>
+
+  <style>
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 28px;
+      border-right: 1px solid rgba(242,239,233,0.06);
+      font-family: 'Geist Mono', monospace;
+      font-size: 13px;
+      color: rgba(242,239,233,0.55);
+      white-space: nowrap;
+      transition: color 0.2s;
+    }
+    .ticker-item:hover { color: rgba(242,239,233,0.9); }
+    @keyframes ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-track {
+      animation: ticker 40s linear infinite;
+    }
+    .ticker-track:hover { animation-play-state: paused; }
+  </style>
+
+</section>
+
+<!-- ╔═══════════════════════════════════════════════════════════════╗
+     SECTION 4 — DSGVO & VERTRAUEN
+     ╚═══════════════════════════════════════════════════════════════╝ -->
+<section id="dsgvo" class="relative bg-petrol py-20 md:py-28 px-4 md:px-8">
+  <div class="max-w-7xl mx-auto">
+
+    <div class="mb-12 md:mb-16">
+      <p class="font-mono text-[11px] text-teal tracking-[0.2em] uppercase mb-4 reveal">// 04 — Datenschutz</p>
+      <h2 class="font-display font-light text-bone leading-[1.05] tracking-[-0.02em] text-3xl sm:text-4xl md:text-5xl max-w-2xl">
+        <span class="block">Ihre Daten bleiben</span>
+        <span class="block text-bone/50">wo sie hingehören.</span>
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12 reveal">
+
+      <!-- Karte 1 -->
+      <div class="bg-petrol2 border border-bone/8 rounded-2xl p-6 md:p-8">
+        <div class="w-11 h-11 rounded-xl bg-teal/15 border border-teal/30 flex items-center justify-center mb-5">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h3 class="font-display text-xl text-bone mb-3">Selfhosted auf deutschen Servern</h3>
+        <p class="text-bone/55 text-sm leading-relaxed">Das System läuft auf unseren eigenen Servern bei Hetzner in Deutschland — nicht in einer amerikanischen Cloud. Ihre Lead-Daten verlassen die EU nicht.</p>
+      </div>
+
+      <!-- Karte 2 -->
+      <div class="bg-petrol2 border border-bone/8 rounded-2xl p-6 md:p-8">
+        <div class="w-11 h-11 rounded-xl bg-teal/15 border border-teal/30 flex items-center justify-center mb-5">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3 class="font-display text-xl text-bone mb-3">DSGVO-konform von Anfang an</h3>
+        <p class="text-bone/55 text-sm leading-relaxed">Jede automatische Mail enthält einen Abmelde-Link. Lead-Daten werden nach 90 Tagen automatisch gelöscht. Beim Onboarding unterzeichnen wir gemeinsam einen Auftragsverarbeitungsvertrag (AVV).</p>
+      </div>
+
+      <!-- Karte 3 -->
+      <div class="bg-petrol2 border border-bone/8 rounded-2xl p-6 md:p-8">
+        <div class="w-11 h-11 rounded-xl bg-teal/15 border border-teal/30 flex items-center justify-center mb-5">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <h3 class="font-display text-xl text-bone mb-3">Ihre Daten gehören Ihnen</h3>
+        <p class="text-bone/55 text-sm leading-relaxed">Wir arbeiten in Ihrem E-Mail-Postfach und Ihrem CRM — nicht in einer fremden Plattform. Bei Kündigung erhalten Sie alle Lead-Daten als Export. Kein Lock-in.</p>
+      </div>
+
+    </div>
+
+    <!-- Trust Bar -->
+    <div class="bg-petrol2 border border-bone/8 rounded-2xl px-6 md:px-10 py-5 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 reveal">
+      <div class="flex items-center gap-3 text-sm text-bone/55">
+        <svg class="text-teal flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Hetzner · Deutschland
+      </div>
+      <div class="flex items-center gap-3 text-sm text-bone/55">
+        <svg class="text-teal flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        DSGVO-konform · EU-Server
+      </div>
+      <div class="flex items-center gap-3 text-sm text-bone/55">
+        <svg class="text-teal flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        AVV inklusive
+      </div>
+      <div class="flex items-center gap-3 text-sm text-bone/55">
+        <svg class="text-teal flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Automatische Datenlöschung nach 90 Tagen
+      </div>
+      <div class="flex items-center gap-3 text-sm text-bone/55">
+        <svg class="text-teal flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Kein Lock-in
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ╔═══════════════════════════════════════════════════════════════╗
+     SECTION 5 — FAQ
+     ╚═══════════════════════════════════════════════════════════════╝ -->
+<section id="faq" class="relative bg-petrol py-20 md:py-28 px-4 md:px-8">
+  <div class="max-w-4xl mx-auto">
+
+    <div class="mb-12 md:mb-16">
+      <p class="font-mono text-[11px] text-teal tracking-[0.2em] uppercase mb-4 reveal">// 05 — FAQ</p>
+      <h2 class="font-display font-light text-bone leading-[1.05] tracking-[-0.02em] text-3xl sm:text-4xl md:text-5xl reveal">
+        Häufige Fragen.
+      </h2>
+    </div>
+
+    <div class="space-y-3 reveal" id="faq-list">
+
+      <!-- FAQ 1 -->
+      <div class="faq-item bg-petrol2 border border-bone/8 rounded-2xl overflow-hidden">
+        <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left">
+          <span class="font-display text-lg text-bone">Wie lange dauert die Einrichtung?</span>
+          <svg class="faq-icon flex-shrink-0 ml-4 transition-transform duration-300" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer hidden px-6 pb-5">
+          <p class="text-bone/60 text-sm leading-relaxed">Das Onboarding dauert ca. 45–60 Minuten — wir gehen gemeinsam durch Ihre Objekte, häufige Fragen und Qualifizierungskriterien. Danach richtet Curevo alles ein (~2–3 Stunden) und testet mit simulierten Leads. Go-Live in der Regel am selben Tag oder am nächsten Tag.</p>
+        </div>
+      </div>
+
+      <!-- FAQ 2 -->
+      <div class="faq-item bg-petrol2 border border-bone/8 rounded-2xl overflow-hidden">
+        <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left">
+          <span class="font-display text-lg text-bone">Was passiert mit meinen Lead-Daten?</span>
+          <svg class="faq-icon flex-shrink-0 ml-4 transition-transform duration-300" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer hidden px-6 pb-5">
+          <p class="text-bone/60 text-sm leading-relaxed">Ihre Lead-Daten werden auf deutschen Servern (Hetzner) gespeichert und nach 90 Tagen automatisch gelöscht. Sie haben jederzeit Zugriff auf alle Daten in Ihrem CRM. Bei Kündigung erhalten Sie einen vollständigen Export — danach werden alle Daten innerhalb von 30 Tagen gelöscht. Wir unterzeichnen beim Onboarding einen AVV gemäß Art. 28 DSGVO.</p>
+        </div>
+      </div>
+
+      <!-- FAQ 3 -->
+      <div class="faq-item bg-petrol2 border border-bone/8 rounded-2xl overflow-hidden">
+        <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left">
+          <span class="font-display text-lg text-bone">Brauche ich technisches Wissen?</span>
+          <svg class="faq-icon flex-shrink-0 ml-4 transition-transform duration-300" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer hidden px-6 pb-5">
+          <p class="text-bone/60 text-sm leading-relaxed">Nein. Sie brauchen kein technisches Wissen. Sie richten einmalig Ihren Kalenderlink ein (5 Minuten) — den Rest übernimmt Curevo. Das System läuft vollständig im Hintergrund. Sie sehen alles übersichtlich in Ihrem CRM und bekommen bei Bedarf eine kurze Einführung.</p>
+        </div>
+      </div>
+
+      <!-- FAQ 4 -->
+      <div class="faq-item bg-petrol2 border border-bone/8 rounded-2xl overflow-hidden">
+        <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left">
+          <span class="font-display text-lg text-bone">Kann ich jederzeit kündigen?</span>
+          <svg class="faq-icon flex-shrink-0 ml-4 transition-transform duration-300" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer hidden px-6 pb-5">
+          <p class="text-bone/60 text-sm leading-relaxed">Die Mindestlaufzeit beträgt 3 Monate — danach ist der Vertrag monatlich mit 30 Tagen Frist kündbar. Kein Lock-in, keine versteckten Kosten. Bei Kündigung werden alle Ihre Daten auf Wunsch exportiert und danach vollständig gelöscht.</p>
+        </div>
+      </div>
+
+      <!-- FAQ 5 -->
+      <div class="faq-item bg-petrol2 border border-bone/8 rounded-2xl overflow-hidden">
+        <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left">
+          <span class="font-display text-lg text-bone">Gibt es Förderungen?</span>
+          <svg class="faq-icon flex-shrink-0 ml-4 transition-transform duration-300" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer hidden px-6 pb-5">
+          <p class="text-bone/60 text-sm leading-relaxed">Ja — über das österreichische Förderprogramm KMU.Digital können Digitalisierungsmaßnahmen gefördert werden. Ob und wie Curevo dabei förderbar ist, klären wir gemeinsam im Erstgespräch. Wir helfen Ihnen beim Antrag.</p>
+        </div>
+      </div>
+
+      <!-- FAQ 6 -->
+      <div class="faq-item bg-petrol2 border border-bone/8 rounded-2xl overflow-hidden">
+        <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left">
+          <span class="font-display text-lg text-bone">Was passiert wenn das System einen Fehler macht?</span>
+          <svg class="faq-icon flex-shrink-0 ml-4 transition-transform duration-300" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3A9B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer hidden px-6 pb-5">
+          <p class="text-bone/60 text-sm leading-relaxed">Das System überwacht sich selbst rund um die Uhr. Bei jedem Fehler bekommen Sie und wir sofort eine Benachrichtigung — bevor ein Lead verloren geht. Unsichere oder verärgerte Leads werden niemals automatisch beantwortet sondern direkt an Sie weitergeleitet.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq-answer { transition: all 0.3s ease; }
+  .faq-item.open .faq-icon { transform: rotate(45deg); }
+</style>
+
+<script>
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const answer = item.querySelector('.faq-answer');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => {
+      i.classList.remove('open');
+      i.querySelector('.faq-answer').classList.add('hidden');
+    });
+    if (!isOpen) {
+      item.classList.add('open');
+      answer.classList.remove('hidden');
+    }
+  }
+</script>
+
+<!-- ╔═══════════════════════════════════════════════════════════════╗
+     FOOTER / KONTAKT
+     ╚═══════════════════════════════════════════════════════════════╝ -->
+<footer id="kontakt" class="bg-petrol border-t border-bone/8 px-4 md:px-8 py-20 md:py-28">
+  <div class="max-w-7xl mx-auto">
+
+    <!-- Heading row -->
+    <div class="mb-12 md:mb-16">
+      <p class="font-mono text-[11px] text-teal tracking-[0.2em] uppercase mb-5">// 05 — Kontakt</p>
+      <h3 class="font-display font-light text-bone text-4xl md:text-6xl leading-[0.95] tracking-[-0.02em] max-w-3xl">
+        Sprechen Sie mit uns.<br/>
+        <span class="text-bone/50 italic">Unverbindlich. In 24 Stunden.</span>
+      </h3>
+    </div>
+
+    <!-- Contact form + info -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
+
+      <!-- Left: Form -->
+      <form action="https://formspree.io/f/xkokzyrj" method="POST" class="lg:col-span-7 flex flex-col gap-5">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <label class="flex flex-col gap-2">
+            <span class="font-mono text-[10px] text-bone/50 tracking-widest uppercase">Name</span>
+            <input type="text" name="name" placeholder="Max Mustermann" required
+                   class="bg-petrol2 border border-bone/12 rounded-lg px-4 py-3 text-bone placeholder:text-bone/30 focus:border-teal focus:outline-none transition-colors font-ui text-sm"/>
+          </label>
+          <label class="flex flex-col gap-2">
+            <span class="font-mono text-[10px] text-bone/50 tracking-widest uppercase">E-Mail</span>
+            <input type="email" name="email" placeholder="max@firma.at" required
+                   class="bg-petrol2 border border-bone/12 rounded-lg px-4 py-3 text-bone placeholder:text-bone/30 focus:border-teal focus:outline-none transition-colors font-ui text-sm"/>
+          </label>
+        </div>
+
+        <label class="flex flex-col gap-2">
+          <span class="font-mono text-[10px] text-bone/50 tracking-widest uppercase">Firma / Maklerbüro</span>
+          <input type="text" name="company" placeholder="Immobilien XYZ"
+                 class="bg-petrol2 border border-bone/12 rounded-lg px-4 py-3 text-bone placeholder:text-bone/30 focus:border-teal focus:outline-none transition-colors font-ui text-sm"/>
+        </label>
+
+        <label class="flex flex-col gap-2">
+          <span class="font-mono text-[10px] text-bone/50 tracking-widest uppercase">Worum geht's?</span>
+          <textarea name="message" rows="4" placeholder="Kurz erzählen: Wie viele Leads pro Monat, welche Portale, größte Zeitfresser…" required
+                    class="bg-petrol2 border border-bone/12 rounded-lg px-4 py-3 text-bone placeholder:text-bone/30 focus:border-teal focus:outline-none transition-colors font-ui text-sm resize-none"></textarea>
+        </label>
+
+        <div class="flex items-start gap-2 text-xs text-bone/50 font-ui">
+          <input type="checkbox" name="privacy" required class="mt-1 accent-teal"/>
+          <span>Ich akzeptiere die <a href="/datenschutz.html" class="text-bone/75 underline underline-offset-2 hover:text-teal">Datenschutzerklärung</a> und bin damit einverstanden, dass meine Angaben zur Kontaktaufnahme gespeichert werden.</span>
+        </div>
+
+        <!-- Honeypot Spam-Schutz -->
+        <input type="text" name="_gotcha" style="display:none"/>
+
+        <!-- Weiterleitung nach Absenden -->
+        <input type="hidden" name="_next" value="https://curevo.at/?success=true"/>
+
+        <div class="flex items-center gap-3 mt-2">
+          <button type="submit"
+                  class="cta-group inline-flex items-center justify-between gap-6 bg-teal text-petrol rounded-full pl-6 pr-1.5 py-1.5 font-ui font-medium text-base hover:bg-teallt transition-colors">
+            <span>Anfrage senden</span>
+            <span class="flex items-center justify-center w-10 h-10 rounded-full bg-petrol text-bone">
+              <svg class="cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Right: Direct contact info -->
+      <div class="lg:col-span-5 flex flex-col gap-8">
+        <div class="bg-petrol2 border border-bone/8 rounded-2xl p-6 md:p-8">
+          <p class="font-mono text-[10px] text-bone/50 tracking-widest uppercase mb-3">Direkter Kontakt</p>
+          <a href="mailto:info@curevo.at" class="font-display text-2xl md:text-3xl text-bone hover:text-teal transition-colors block mb-6 break-all">info@curevo.at</a>
+
+          <div class="space-y-4 text-sm text-bone/65 font-ui">
+            <div class="flex items-start gap-3">
+              <svg class="flex-shrink-0 mt-0.5 text-teal" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span>Salzburg, Österreich</span>
+            </div>
+            <div class="flex items-start gap-3">
+              <svg class="flex-shrink-0 mt-0.5 text-teal" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>Antwort innerhalb von 24h</span>
+            </div>
+            <div class="flex items-start gap-3">
+              <svg class="flex-shrink-0 mt-0.5 text-teal" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Unverbindliches Erstgespräch · 30 Min.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-xs text-bone/50 leading-relaxed font-ui">
+          Wir arbeiten mit Immobilienmaklern im gesamten DACH-Raum zusammen. Jede Anfrage wird persönlich geprüft — im Erstgespräch klären wir, ob und wie Curevo in Ihren Alltag passt.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Divider -->
+    <div class="mt-20 md:mt-28 pt-10 border-t border-bone/8">
+
+      <!-- Footer meta columns -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12 font-ui text-sm">
+        <div>
+          <p class="font-mono text-[10px] text-bone/40 tracking-widest uppercase mb-3">Curevo</p>
+          <ul class="space-y-2 text-bone/65">
+            <li><a href="#produkt" class="hover:text-teal transition-colors">Produkt</a></li>
+            <li><a href="#warum"   class="hover:text-teal transition-colors">Warum Curevo</a></li>
+            <li><a href="#kontakt" class="hover:text-teal transition-colors">Kontakt</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-mono text-[10px] text-bone/40 tracking-widest uppercase mb-3">Rechtliches</p>
+          <ul class="space-y-2 text-bone/65">
+            <li><a href="/impressum.html"   class="hover:text-teal transition-colors">Impressum</a></li>
+            <li><a href="/datenschutz.html" class="hover:text-teal transition-colors">Datenschutz</a></li>
+            <li><a href="/agb.html"         class="hover:text-teal transition-colors">AGB</a></li>
+            <li><a href="/avv.html"         class="hover:text-teal transition-colors">AVV</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-mono text-[10px] text-bone/40 tracking-widest uppercase mb-3">Einstellungen</p>
+          <ul class="space-y-2 text-bone/65">
+            <li><a href="/cookies.html" class="hover:text-teal transition-colors">Cookie-Einstellungen</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-mono text-[10px] text-bone/40 tracking-widest uppercase mb-3">Kontakt</p>
+          <ul class="space-y-2 text-bone/65">
+            <li><a href="mailto:info@curevo.at" class="hover:text-teal transition-colors break-all">info@curevo.at</a></li>
+            <li class="text-bone/45">Salzburg, Österreich</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Footer bottom bar -->
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 font-mono text-[11px] text-bone/45 pt-8 border-t border-bone/6">
+        <div class="flex items-center gap-3">
+          <span class="font-display text-base text-bone font-medium tracking-tight">Curevo</span>
+          <span>© 2026</span>
+          <span class="text-bone/25">·</span>
+          <span>Niklas Weiß</span>
+        </div>
+        <div>
+          KI-Automatisierung · DACH
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Manifest heading: split each span into words, add stagger
+  document.querySelectorAll('.manifest-words').forEach((seg, segIdx) => {
+    const text = seg.textContent;
+    const cls  = seg.className;
+    seg.textContent = '';
+    seg.className = ''; // clear; we re-apply on inner wrapper
+    const wrap = document.createElement('span');
+    wrap.className = cls + ' inline';
+    text.split(/(\s+)/).forEach(chunk => {
+      if (chunk.trim() === '') {
+        wrap.appendChild(document.createTextNode(chunk));
+      } else {
+        const w = document.createElement('span');
+        w.className = 'inline-block reveal-word';
+        w.textContent = chunk;
+        wrap.appendChild(w);
+      }
+    });
+    seg.appendChild(wrap);
+    seg.appendChild(document.createTextNode(' '));
+  });
+
+  // IntersectionObserver — reveal elements
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '-40px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // Manifest words: stagger based on order
+  const manifestWords = document.querySelectorAll('.reveal-word');
+  const mIo = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const idx = Array.from(manifestWords).indexOf(e.target);
+        setTimeout(() => e.target.classList.add('in'), idx * 55);
+      }
+    });
+  }, { threshold: 0.4 });
+  manifestWords.forEach(el => mIo.observe(el));
+
+  // Body paragraph — char-by-char scroll reveal
+  const bodyP = document.querySelector('.body-reveal');
+  if (bodyP) {
+    const text = bodyP.textContent;
+    bodyP.textContent = '';
+    const chars = [];
+    text.split('').forEach(c => {
+      const s = document.createElement('span');
+      s.textContent = c;
+      s.style.opacity = '0.2';
+      s.style.transition = 'opacity 0.4s ease';
+      bodyP.appendChild(s);
+      chars.push(s);
+    });
+    function onScroll() {
+      const rect = bodyP.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const start = vh * 0.8;
+      const end   = vh * 0.2;
+      const progress = Math.max(0, Math.min(1, (start - rect.top) / (start - end)));
+      const cutoff = Math.floor(progress * chars.length);
+      chars.forEach((ch, i) => {
+        ch.style.opacity = i < cutoff ? '1' : '0.2';
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  // Card entrance stagger
+  const cards = document.querySelectorAll('.card-enter');
+  const cIo = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const idx = Array.from(cards).indexOf(e.target);
+        setTimeout(() => e.target.classList.add('in'), idx * 140);
+        cIo.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '-60px' });
+  cards.forEach(c => cIo.observe(c));
+</script>
+
+<!-- ╔═══════════════════════════════════════════════════════════════╗
+     COOKIE BANNER
+     ╚═══════════════════════════════════════════════════════════════╝ -->
+<div id="cookie-banner" style="display:none" class="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6">
+  <div class="max-w-4xl mx-auto bg-petrol2 border border-bone/12 rounded-2xl p-5 md:p-6 flex flex-col md:flex-row md:items-center gap-4 shadow-2xl">
+    <div class="flex-1">
+      <p class="font-mono text-[10px] text-teal tracking-[0.15em] uppercase mb-1">Cookie-Hinweis</p>
+      <p class="text-bone/65 text-sm leading-relaxed">
+        Wir verwenden ausschließlich technisch notwendige Cookies. Keine Tracking- oder Marketing-Cookies.
+        <a href="/datenschutz.html" class="text-teal hover:text-teallt underline underline-offset-2 ml-1">Datenschutz</a>
+      </p>
+    </div>
+    <div class="flex gap-3 flex-shrink-0">
+      <button onclick="acceptCookies()"
+              class="inline-flex items-center gap-2 bg-teal text-petrol rounded-full px-5 py-2 font-ui font-medium text-sm hover:bg-teallt transition-colors">
+        Verstanden
+      </button>
+      <a href="/cookies.html"
+         class="inline-flex items-center gap-2 border border-bone/20 text-bone/60 rounded-full px-5 py-2 font-ui font-medium text-sm hover:border-bone/40 hover:text-bone transition-colors">
+        Einstellungen
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  function acceptCookies() {
+    localStorage.setItem('curevo-cookies', 'accepted');
+    document.getElementById('cookie-banner').style.display = 'none';
+  }
+  if (!localStorage.getItem('curevo-cookies')) {
+    setTimeout(() => {
+      document.getElementById('cookie-banner').style.display = 'block';
+    }, 1500);
+  }
+</script>
+  
+</body>
+</html>
